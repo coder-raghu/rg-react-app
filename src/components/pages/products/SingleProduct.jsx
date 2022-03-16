@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, Container, Image } from "react-bootstrap";
-import SweetAlert from "react-bootstrap-sweetalert/dist/components/SweetAlert";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import Loader from "../../global/Loader";
 
@@ -40,32 +39,8 @@ export default function SingleProduct (){
         navigate(`/productDetails/${id}`);
     }
 
-    const onConfirm = () => {
-        alert('click');
-    }
-    
-    const onCancel = () => {
-        return false
-    }
-
-
     return(
         <>
-        <SweetAlert
-                        custom
-                        showCancel
-                        showCloseButton
-                        confirmBtnText="Yes"
-                        cancelBtnText="No"
-                        confirmBtnBsStyle="primary"
-                        cancelBtnBsStyle="light"
-                        customIcon="https://raw.githubusercontent.com/djorg83/react-bootstrap-sweetalert/master/demo/assets/thumbs-up.jpg"
-                        title="Do you like thumbs?"
-                        onConfirm={() => onConfirm()}
-                        onCancel={() =>onCancel()}
-                        >
-                        You will find they are up!
-                    </SweetAlert>
         <Container>
             <div>Name: {productDetails.data.title}</div>
             <div>Price: {productDetails.data.price}</div>
