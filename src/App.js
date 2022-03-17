@@ -1,8 +1,6 @@
 import './App.css';
 import React from 'react';
-// import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import 'react-notifications/lib/notifications.css';
 import { Route, Routes } from "react-router-dom";
 import Header from './components/layouts/Header';
 import Home from './components/pages/Home';
@@ -14,12 +12,10 @@ import SinglePost from './components/pages/posts/SinglePost';
 import Footer from './components/layouts/Footer';
 import NoMatch from './components/pages/NoMatch';
 import Products from './components/pages/products/Products';
-// import Manage from './components/pages/products/Manage';
 import AddEdit from './components/pages/products/AddEdit';
 import SingleProduct from './components/pages/products/SingleProduct';
-import { axios } from 'axios';
-// import EditProduct from './components/pages/products/EditProduct';
-// import httpsConfig from './config/https-config';
+import Register from './components/auth/Register';
+import Login from './components/auth/login';
 
 
 
@@ -40,7 +36,8 @@ function App() {
                 <Route exact path="/manage/:id" element={ <AddEdit />} />
             </Route>
             <Route exact path="/productDetails/:id" element={ <SingleProduct />} />
-            {/* <Route exact path="/editProduct/:id" element={ <EditProduct />} /> */}
+            <Route exact path="/register" element={ <Register />} />
+            <Route exact path="/login" element={ <Login />} />
             <Route path="*" element={ <NoMatch />} />
         </Routes>
         <Footer />

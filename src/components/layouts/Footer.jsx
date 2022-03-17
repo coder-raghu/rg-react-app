@@ -5,9 +5,11 @@ import { Container } from "react-bootstrap";
 const Footer = () => {
     return(
         <>
-            <Container>
-                <h5>I am Footer component</h5>
-            </Container>
+            {/* <Container> */}
+            <div className="mt-5 p-4 bg-dark text-white text-center">
+                <p>Footer</p>
+            </div>
+            {/* </Container> */}
         </>
     )
 }

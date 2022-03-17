@@ -16,6 +16,9 @@ const Menu = () => {
                     <NavLink className="nav-link" to="/users" >Users</NavLink>
                     <NavLink className="nav-link" to="/posts" >Posts</NavLink>
                     <NavLink className="nav-link" to="/products" >Products</NavLink>
+                    <NavLink className="nav-link" to="/login" >Login</NavLink>
+                    <NavLink className="nav-link" to="/register" >Register</NavLink>
+                    <NavLink className="nav-link" to="/logout" >Logout</NavLink>
                 </Nav>
             </Container>
         </Navbar>

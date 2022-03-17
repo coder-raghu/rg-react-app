@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Container, Table, Button } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import swal from "sweetalert";
 import Loader from "../../global/Loader";
 // import api from "../../../config/Api";
@@ -13,9 +13,13 @@ export default function Products(){
     const [loading, SetLoading] = useState(true);
     const [products, setProducts] = useState();
     const [deleted, setdeleted] = useState(true);
+    // let navigate = useNavigate();
+    // const { successMessage, id } = useParams();
+    // console.log(successMessage);
+    // console.log(id);
 
     async function getProducts(){
-        const response = await axios.get('http://127.0.0.1:8000/api/products'); 
+        const response = await axios.get('http://127.0.0.1:5000/products'); 
         if(response.status===200){
             setProducts(response.data.data);
             SetLoading(false);   
@@ -34,7 +38,7 @@ export default function Products(){
         setdeleted(true)
         swal({
             title: "Are you sure?",
-            text: "you want to delete this product?",
+            text: "You want to delete this product?",
             icon: "warning",
             dangerMode: true,
             buttons: {
@@ -42,25 +46,22 @@ export default function Products(){
                     text: "Cancel",
                     value: null,
                     visible: true,
-                    className: "",
                     closeModal: true,
                 },
                 confirm: {
                     text: "OK",
                     value: true,
                     visible: true,
-                    className: "",
                     closeModal: true
                 }
             }
         }).then((value) => {
             if(value){
-                axios.post('http://127.0.0.1:8000/api/delete', {id:id})
+                axios.post('http://127.0.0.1:5000/product/delete', {id:id})
                 .then(response => {
                     if(response.status === 200){
                         setdeleted(false)
                         swal("Deleted!", "Your product has been deleted!", "success");
-                        // navigate('/products');
                     }
                 });
             }
