@@ -16,12 +16,14 @@ import AddEdit from './components/pages/products/AddEdit';
 import SingleProduct from './components/pages/products/SingleProduct';
 import Register from './components/auth/Register';
 import Login from './components/auth/login';
+import { UserContextProvider } from './components/context/userContext';
 
 
 
 function App() {
     return ( 
         <>
+        <UserContextProvider>
         <Header />
         <Routes> 
             <Route exact path="/" element={ <Home /> } ></Route>
@@ -41,6 +43,7 @@ function App() {
             <Route path="*" element={ <NoMatch />} />
         </Routes>
         <Footer />
+        </UserContextProvider>
         </>
     );
 }

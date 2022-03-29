@@ -37,28 +37,29 @@ const AddEdit = () => {
 
     const onSubmit = (data) =>{
        
-        // const formData = new FormData();
-        // formData.append('image', data.image[0]);
-        // formData.append('title', data.title);
-        // formData.append('price', data.price);
-        // formData.append('quantity', data.quantity);
-        // formData.append('description', data.description);
+        const formData = new FormData();
+        formData.append('image', data.image[0]);
+        formData.append('title', data.title);
+        formData.append('price', data.price);
+        formData.append('quantity', data.quantity);
+        formData.append('description', data.description);
         
         let axiosConfig = {
             headers: {
-                'Content-Type': 'application/json;charset=UTF-8',
+                // 'Content-Type': 'application/json;charset=UTF-8',
+                'Content-Type': 'multipart/form-data',
                 "Access-Control-Allow-Origin": "*",
             }
           };
         
         var requestUrl = 'http://127.0.0.1:5000/product/store';
         if(id){
-            // formData.append('id', id);
-            data.id = id;
+            formData.append('id', id);
+            // data.id = id;
             requestUrl = 'http://127.0.0.1:5000/product/update';
         }
     
-        axios.post(requestUrl, data, axiosConfig)
+        axios.post(requestUrl, formData, axiosConfig)
         .then(response => {
             if(response.status === 200){
                 if(id){
@@ -121,13 +122,13 @@ const AddEdit = () => {
                             </p>
                         </Form.Group>
 
-                        {/* <Form.Group controlId="formFile" className="mb-3">
+                        <Form.Group controlId="formFile" className="mb-3">
                             <Form.Label>Image</Form.Label>
                             <Form.Control  { ...register("image") }  type="file" />
                             <p style={error}>
                                 {errors.image?.type === 'required' && "image is required"}
                             </p>
-                        </Form.Group> */}
+                        </Form.Group>
 
                         <Form.Group as={Col} md="12">
                             <Button variant="primary" type="submit">Submit</Button>{' '}

@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Container, Table, Button } from "react-bootstrap";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { Container, Table, Button, Image } from "react-bootstrap";
+import { useNavigate, NavLink } from "react-router-dom";
 import swal from "sweetalert";
+import { useUserContext } from "../../context/userContext";
 import Loader from "../../global/Loader";
-// import api from "../../../config/Api";
 // import ProductList from "./ProductList";
 
 
@@ -13,10 +13,8 @@ export default function Products(){
     const [loading, SetLoading] = useState(true);
     const [products, setProducts] = useState();
     const [deleted, setdeleted] = useState(true);
-    // let navigate = useNavigate();
-    // const { successMessage, id } = useParams();
-    // console.log(successMessage);
-    // console.log(id);
+    const { user } = useUserContext();
+    const navigate = useNavigate();
 
     async function getProducts(){
         const response = await axios.get('http://127.0.0.1:5000/products'); 
@@ -32,6 +30,10 @@ export default function Products(){
 
     if(loading){
         return(<Loader />);
+    }
+
+    if(!user.isLoggedIn){
+        navigate('/login');
     }
 
     const willDelete = (id) =>{
@@ -88,9 +90,11 @@ export default function Products(){
                         // return (<ProductList data={product}/>)
                         const view = `/productDetails/${product.id}`;
                         const edit = `/manage/${product.id}`;
+                        const imageUrl = `http://127.0.0.1:5000/${product.image}`;
                         return (
                             <tr key={product.id}>
                                 <td>{product.id}</td>
+                                <td><Image src={imageUrl}></Image></td>
                                 <td><NavLink to={view}>{product.title}</NavLink></td>
                                 <td>{product.price}</td>
                                 <td>{product.qty}</td>

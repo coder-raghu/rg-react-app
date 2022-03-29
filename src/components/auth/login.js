@@ -3,7 +3,10 @@ import React, { useState, useEffect } from "react"
 import { Form, Container, Button, Row, Col, Alert } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import swal from "sweetalert";
+// import swal from "sweetalert";
+import { useUserContext } from "../context/userContext";
+
+
 
 const Login = () => {
     
@@ -11,6 +14,7 @@ const Login = () => {
     const [loading, SetLoading] = useState(false);
     const [loginError, SetLoginError] = useState( { message : '', type: 'danger' } );
     let navigate = useNavigate();
+    const {user, logIn} = useUserContext();
 
     useEffect(() => {
 
@@ -24,13 +28,14 @@ const Login = () => {
         var requestUrl = 'http://127.0.0.1:5000/user/login';
         axios.post(requestUrl, data)
         .then(response => {
-            if(response.status ===200 && response.data.status){
+            if(response.status===200 && response.data.status){
                 // swal("Loggedin!", "Loggedin successfully", "success");
                 SetLoginError( { message : 'Loggedin successfully', type:'success' } );
+                logIn(response.data.data);
                 reset();
                 setTimeout(function () { 
                     navigate('/products');
-                 }, 2000);
+                }, 1000);
             } else {
                 SetLoginError( { message : response.data.message, type:'danger' } );
             }
