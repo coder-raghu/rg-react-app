@@ -26,10 +26,12 @@ export function CartContextProvider( {children} ){
         // console.log(JSON.parse(cartData));
         const key = new Date().getTime();
         var pData = {
+                key: key,
                 id: product.id,
                 title: product.title,
-                price: product.price,
+                productPrice: product.price,
                 qty: product.qty,
+                price: product.price * product.qty,
             };
         // console.log(pData)
         setCart([ ...cart, pData ]);

@@ -40,8 +40,8 @@ export default function Cart(){
                     <tr>
                         <th>#</th>
                         <th>Title</th>
+                        <th>Price * Qty</th>
                         <th>Price</th>
-                        <th>Qty</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -59,8 +59,8 @@ export default function Cart(){
                             <tr key={product.id}>
                                 <td><Image centered="true" width="100" thumbnail="true" src={imageName}></Image></td>
                                 <td><NavLink to={view}>{product.title}</NavLink></td>
+                                <td>{product.productPrice} * {product.qty}</td>
                                 <td>{product.price}</td>
-                                <td>{product.qty}</td>
                                 <td>
                                     <NavLink to="/"><Button className="me-2">Remove</Button></NavLink>
                                 </td>

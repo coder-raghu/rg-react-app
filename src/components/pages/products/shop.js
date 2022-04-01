@@ -11,6 +11,7 @@ export default function Shop(){
     const [loading, SetLoading] = useState(true);
     const [products, setProducts] = useState();
     const { cart, addItem } = useCartContext();
+    const [quantity, setQuantity] = useState(1);
 
     const apiUrl = process.env.REACT_APP_API_URL;
   
@@ -27,6 +28,18 @@ export default function Shop(){
 
     if(loading){
         return(<Loader />);
+    }
+
+    const incrementQuantity = () => {
+        setQuantity(quantity + 1);
+    }
+    
+    const decrementQuantity = () => {
+        if(quantity<=1){
+            setQuantity(1);
+        } else {
+            setQuantity(quantity - 1);
+        }
     }
 
     return(
@@ -50,7 +63,13 @@ export default function Shop(){
                                     <Card.Body>
                                         <Card.Title><NavLink to={view}>{product.title.substring(0, 30) + "..."}</NavLink></Card.Title>
                                         <Card.Text>{product.description.substring(0, 50) + "..."}</Card.Text>
-                                        <Button variant="primary" onClick={()=> addItem(product)}>Add to cart</Button>
+                                        
+                                        <Button variant="primary" className="me-2" onClick={()=> decrementQuantity()}>-</Button>
+                                        <input type="text" style={{ width: '50px', 'textAlign':'center' }} onChange="" name="quantity" value={quantity}></input>
+                                        <Button variant="primary" className="ms-2" onClick={()=> incrementQuantity() }>+</Button>
+                                        
+                                        <Button variant="primary" className="ms-2" onClick={()=> addItem(product)}>Add to cart</Button>
+                                        
                                     </Card.Body>
                                 </Card>
                             </Col>
