@@ -13,7 +13,7 @@ var id = localStorage.getItem('shopie-user-id');
 var isloggedin = localStorage.getItem('shopie-user-isloggedin');
 var loginFlage = true;
 if(isloggedin==null){
-    var loginFlage = false;
+    loginFlage = false;
 }
 
 const USER = { name, email, id, isLoggedIn:loginFlage };

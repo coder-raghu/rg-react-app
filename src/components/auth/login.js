@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react"
 import { Form, Container, Button, Row, Col, Alert } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import swal from "sweetalert";
 import { useUserContext } from "../context/userContext";
 
@@ -10,13 +10,17 @@ import { useUserContext } from "../context/userContext";
 
 const Login = () => {
     
-    const { register, handleSubmit, formState: { errors },setValue, reset } = useForm();
+    const { register, handleSubmit, formState: { errors }, reset, resetField } = useForm();
     const [loading, SetLoading] = useState(false);
     const [loginError, SetLoginError] = useState( { message : '', type: 'danger' } );
     let navigate = useNavigate();
     const {user, logIn} = useUserContext();
 
     useEffect(() => {
+
+        if(user.isLoggedIn){
+            navigate('/products');
+        }
 
         SetLoading(false);
 
@@ -38,6 +42,8 @@ const Login = () => {
                 }, 1000);
             } else {
                 SetLoginError( { message : response.data.message, type:'danger' } );
+                resetField('password')
+                
             }
             SetLoading(false);
         });
@@ -46,6 +52,7 @@ const Login = () => {
     const error = {
         color: "red",
     }
+
 
     return(
         <>

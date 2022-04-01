@@ -3,14 +3,6 @@ import React from "react"
 
 const About = () => {
 
-    const onConfirm = () => {
-        alert('click');
-    }
-    
-    const onCancel = () => {
-        
-    }
-
     return(
         <>
         <h5>I am about</h5>

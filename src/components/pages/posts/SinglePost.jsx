@@ -19,7 +19,7 @@ const SinglePost = () => {
     
     
     useEffect(() => {
-        async function getPostDetails(id){
+        async function getPostDetails(){
             const response = await axios.get(`https://jsonplaceholder.typicode.com/posts/${id}`); 
             if(response.status ===200){
                 SetPostDetails(response.data);
@@ -29,7 +29,7 @@ const SinglePost = () => {
             }
     
         }
-        getPostDetails(id);
+        getPostDetails();
     }, []);
 
     const loadComments =  async () => {

@@ -10,28 +10,29 @@ const AddEdit = () => {
 
 
     let {id} = useParams();
-    const { register, handleSubmit, formState: { errors },setValue, reset } = useForm();
+    const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm();
     const [loading, SetLoading] = useState(true);
     let navigate = useNavigate();
+    const apiUrl = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
-      const products = async () =>{
-        await axios.post(`http://127.0.0.1:5000/product/show`, {id:id})
-        .then((response) => {
-            if(response.data.status == true){
-                const dataObj = response.data.data[0];
-                setValue('title', dataObj.title)
-                setValue('price', dataObj.price)
-                setValue('quantity', dataObj.qty)
-                setValue('description', dataObj.description)
-                SetLoading(false);   
-            }
-        });       
-      }
-      if(id)
-          products();
-      else
-        SetLoading(false);
+        const products = async () =>{
+            await axios.post(`${apiUrl}product/show`, {id})
+            .then((response) => {
+                if(response.data.status === true){
+                    const dataObj = response.data.data[0];
+                    setValue('title', dataObj.title)
+                    setValue('price', dataObj.price)
+                    setValue('quantity', dataObj.qty)
+                    setValue('description', dataObj.description)
+                    SetLoading(false);   
+                }
+            });       
+        }
+        if(id)
+            products();
+        else
+            SetLoading(false);
 
     }, [])
 
@@ -52,11 +53,11 @@ const AddEdit = () => {
             }
           };
         
-        var requestUrl = 'http://127.0.0.1:5000/product/store';
+        var requestUrl = `${apiUrl}/product/store`;
         if(id){
             formData.append('id', id);
             // data.id = id;
-            requestUrl = 'http://127.0.0.1:5000/product/update';
+            requestUrl = `${apiUrl}/product/update`;
         }
     
         axios.post(requestUrl, formData, axiosConfig)

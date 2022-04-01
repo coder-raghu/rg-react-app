@@ -17,13 +17,16 @@ import SingleProduct from './components/pages/products/SingleProduct';
 import Register from './components/auth/Register';
 import Login from './components/auth/login';
 import { UserContextProvider } from './components/context/userContext';
-
-
+import Call from './components/pages/call/Call';
+import { CartContextProvider } from './components/context/cartContext';
+import Shop from './components/pages/products/shop';
+import Cart from './components/pages/shop/cart';
 
 function App() {
     return ( 
         <>
         <UserContextProvider>
+        <CartContextProvider>
         <Header />
         <Routes> 
             <Route exact path="/" element={ <Home /> } ></Route>
@@ -33,6 +36,9 @@ function App() {
             <Route exact path="/posts" element={ <Posts />} />
             <Route exact path="/posts/:id" element={ <SinglePost />} />
             <Route exact path="/products" element={ <Products />} />
+            <Route exact path="/shop" element={ <Shop />} />
+            <Route exact path="/cart" element={ <Cart />} />
+            <Route exact path="/videosdk" element={ <Call />} />
             <Route exact path="/manage">
                 <Route index path="/manage/" element={ <AddEdit />} />
                 <Route exact path="/manage/:id" element={ <AddEdit />} />
@@ -43,6 +49,7 @@ function App() {
             <Route path="*" element={ <NoMatch />} />
         </Routes>
         <Footer />
+        </CartContextProvider>
         </UserContextProvider>
         </>
     );

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Form, Button, Container, Image, Row, Col } from "react-bootstrap";
 import { NavLink, useParams } from "react-router-dom";
+import { useUserContext } from "../../context/userContext";
 import Loader from "../../global/Loader";
 
 export default function SingleProduct (){
@@ -9,10 +10,11 @@ export default function SingleProduct (){
     const {id} = useParams();
     const [loading, SetLoading] = useState(true);
     const [productDetails, SetProductDetails] = useState();
-    // let navigate = useNavigate();
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const { user } = useUserContext(); 
 
-    async function getProductDetails(id){
-        await axios.post(`http://127.0.0.1:5000/product/show`,{id:id})
+    async function getProductDetails(){
+        await axios.post(`${apiUrl}product/show`,{ id })
         .then(response => {
             if(response.data.status){
                 SetProductDetails(response.data.data[0]);
@@ -23,7 +25,7 @@ export default function SingleProduct (){
 
     useEffect(() => {
         
-        getProductDetails(id);
+        getProductDetails();
 
     },[SetProductDetails]);
     
@@ -68,7 +70,7 @@ export default function SingleProduct (){
                     {productDetails.previous &&
                         <Button className="me-5" onClick={() => pressPrevious(productDetails.previous.id)}>prev : {productDetails.previous.title}</Button>
                     }
-                    <NavLink to="/products"><Button className="float-center">Back</Button></NavLink>
+                    {user.isLoggedIn ?(<NavLink to="/products"><Button className="float-center">Back</Button></NavLink>) : (<NavLink to="/shop"><Button className="float-center">Back</Button></NavLink>)}
                     {productDetails.next && 
                         <Button className="float-end" onClick={() => pressNext(productDetails.next.id)}>Next : {productDetails.next.title}</Button>
                     }

@@ -13,7 +13,7 @@ const Menu = () => {
         <>
         <Navbar bg="light" variant="light">
            <Container>
-                <Navbar.Brand href="#home">Shopie</Navbar.Brand>
+                <Navbar.Brand href="/">Shopie</Navbar.Brand>
                 <Nav className="me-auto">
                     <NavLink className="nav-link" to="/" >Home</NavLink>
                     <NavLink className="nav-link" to="/about" >About</NavLink>
@@ -21,10 +21,15 @@ const Menu = () => {
                     <NavLink className="nav-link" to="/users" >Users</NavLink>
                     <NavLink className="nav-link" to="/posts" >Posts</NavLink>
                     {user.isLoggedIn && (
+                        <>
                         <NavLink className="nav-link" to="/products" >Products</NavLink>
+                        <NavLink className="nav-link" to="/videosdk" >VideoSDK</NavLink>
+                        </>
                     )}
                     {!user.isLoggedIn && (
                         <>
+                        <NavLink className="nav-link" to="/shop" >Shop</NavLink>
+                        <NavLink className="nav-link" to="/cart" >Cart</NavLink>
                         <NavLink className="nav-link" to="/login" >Login</NavLink>
                         <NavLink className="nav-link" to="/register" >Register</NavLink>
                         </>

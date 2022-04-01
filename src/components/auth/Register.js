@@ -2,8 +2,9 @@ import axios from "axios";
 import React, { useState, useEffect } from "react"
 import { Form, Container, Button, Row, Col } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
+import { useUserContext } from "../context/userContext";
 import Loader from "../global/Loader";
 
 const Register = () => {
@@ -11,12 +12,20 @@ const Register = () => {
     const { register, handleSubmit, formState: { errors }, getValues, reset } = useForm();
     const [loading, SetLoading] = useState(true);
     let navigate = useNavigate();
+    const { user } = useUserContext();
+    const apiUrl = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
+        
+        
 
         SetLoading(false);
 
     }, [])
+
+    if(user.isLoggedIn){
+        navigate('/products');
+    }
 
     const onSubmit = (data) =>{
     
@@ -37,6 +46,15 @@ const Register = () => {
 
     const error = {
         color: "red",
+    }
+
+    const isEmailUnique =  async(email) => {
+        await axios.post(`${apiUrl}user/emailexists`,{email})
+        .then(response => {
+            if(response.data.status){
+                return true;
+            }
+        });
     }
 
     return(
@@ -60,10 +78,12 @@ const Register = () => {
                             <Form.Control {...register("email", { required: true, pattern: {
                                     value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                                     message: 'Please enter a valid email',
-                                }, })  } type="email"  placeholder="Enter email address" ></Form.Control>
+                                },
+                                validate: isEmailUnique })  } type="email"  placeholder="Enter email address" ></Form.Control>
                             <p style={error}>
                                 {errors.email?.type === 'required' && "Email is required"}
                                 {errors.email?.type === 'pattern' && "Please enter a valid email"}
+                                {errors.email?.type === 'validate' && "This email address already exists"}
                             </p>
                         </Form.Group>
                         

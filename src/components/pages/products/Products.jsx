@@ -13,20 +13,20 @@ export default function Products(){
     const [loading, SetLoading] = useState(true);
     const [products, setProducts] = useState();
     const [deleted, setdeleted] = useState(true);
-    const { user } = useUserContext();
+    const { user } = useUserContext(); 
     const navigate = useNavigate();
-
-    async function getProducts(){
-        const response = await axios.get('http://127.0.0.1:5000/products'); 
-        if(response.status===200){
-            setProducts(response.data.data);
-            SetLoading(false);   
-        }
-    }
+    const apiUrl = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
+        async function getProducts(){
+            const response = await axios.get(`${apiUrl}products`); 
+            if(response.status===200){
+                setProducts(response.data.data);
+                SetLoading(false);   
+            }
+        }
         getProducts();
-    }, [deleted]);
+    }, [deleted, apiUrl]);
 
     if(loading){
         return(<Loader />);
@@ -59,7 +59,7 @@ export default function Products(){
             }
         }).then((value) => {
             if(value){
-                axios.post('http://127.0.0.1:5000/product/delete', {id:id})
+                axios.post(`${apiUrl}/product/delete`, {id:id})
                 .then(response => {
                     if(response.status === 200){
                         setdeleted(false)
@@ -90,11 +90,16 @@ export default function Products(){
                         // return (<ProductList data={product}/>)
                         const view = `/productDetails/${product.id}`;
                         const edit = `/manage/${product.id}`;
-                        const imageUrl = `http://127.0.0.1:5000/${product.image}`;
+                        var imageName = '';
+                        if(product.image){
+                            imageName = apiUrl + product.image;
+                        } else {
+                            imageName = apiUrl + 'uploads/default.png';
+                        }
                         return (
                             <tr key={product.id}>
                                 <td>{product.id}</td>
-                                <td><Image src={imageUrl}></Image></td>
+                                <td><Image centered="true" width="100" thumbnail="true" src={imageName}></Image></td>
                                 <td><NavLink to={view}>{product.title}</NavLink></td>
                                 <td>{product.price}</td>
                                 <td>{product.qty}</td>
