@@ -59,7 +59,7 @@ export default function Products(){
             }
         }).then((value) => {
             if(value){
-                axios.post(`${apiUrl}/product/delete`, {id:id})
+                axios.post(`${apiUrl}product/delete`, {id:id})
                 .then(response => {
                     if(response.status === 200){
                         setdeleted(false)

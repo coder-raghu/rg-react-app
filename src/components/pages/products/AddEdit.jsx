@@ -53,11 +53,11 @@ const AddEdit = () => {
             }
           };
         
-        var requestUrl = `${apiUrl}/product/store`;
+        var requestUrl = `${apiUrl}product/store`;
         if(id){
             formData.append('id', id);
             // data.id = id;
-            requestUrl = `${apiUrl}/product/update`;
+            requestUrl = `${apiUrl}product/update`;
         }
     
         axios.post(requestUrl, formData, axiosConfig)

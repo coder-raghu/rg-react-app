@@ -9,7 +9,7 @@ import Loader from "../global/Loader";
 
 const Register = () => {
    
-    const { register, handleSubmit, formState: { errors }, getValues, reset } = useForm();
+    const { register, handleSubmit, formState: { errors }, getValues, reset, setError, trigger } = useForm();
     const [loading, SetLoading] = useState(true);
     let navigate = useNavigate();
     const { user } = useUserContext();
@@ -29,13 +29,13 @@ const Register = () => {
 
     const onSubmit = (data) =>{
     
-        var requestUrl = 'http://127.0.0.1:5000/user/save   ';
+        var requestUrl = `${apiUrl}user/save`;
         axios.post(requestUrl, data)
         .then(response => {
             if(response.status === 200){
                 swal("Added!", "User registration sucessfully.", "success");
-                navigate('/login');
                 reset();
+                navigate('/login');
             }
         });
     } 
@@ -51,8 +51,14 @@ const Register = () => {
     const isEmailUnique =  async(email) => {
         await axios.post(`${apiUrl}user/emailexists`,{email})
         .then(response => {
-            if(response.data.status){
-                return true;
+            if(!response.data.status){
+                setError("email", {
+                    type: "emailexists",
+                    message: response.data.message
+                }, { shouldFocus: true } )
+
+                trigger("email");
+                console.log(errors.email);
             }
         });
     }
@@ -79,11 +85,11 @@ const Register = () => {
                                     value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                                     message: 'Please enter a valid email',
                                 },
-                                validate: isEmailUnique })  } type="email"  placeholder="Enter email address" ></Form.Control>
+                                validate: isEmailUnique  })} type="email"  placeholder="Enter email address" ></Form.Control>
                             <p style={error}>
                                 {errors.email?.type === 'required' && "Email is required"}
                                 {errors.email?.type === 'pattern' && "Please enter a valid email"}
-                                {errors.email?.type === 'validate' && "This email address already exists"}
+                                {errors.email?.type === 'emailexists' && errors.email.message}
                             </p>
                         </Form.Group>
                         

@@ -19,7 +19,7 @@ import Login from './components/auth/login';
 import { UserContextProvider } from './components/context/userContext';
 import Call from './components/pages/call/Call';
 import { CartContextProvider } from './components/context/cartContext';
-import Shop from './components/pages/products/shop';
+import Shop from './components/pages/shop/shop';
 import Cart from './components/pages/shop/cart';
 
 function App() {
