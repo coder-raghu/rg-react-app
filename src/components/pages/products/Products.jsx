@@ -82,6 +82,7 @@ export default function Products(){
                         <th>Title</th>
                         <th>Price</th>
                         <th>Qty</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -103,6 +104,7 @@ export default function Products(){
                                 <td><NavLink to={view}>{product.title}</NavLink></td>
                                 <td>{product.price}</td>
                                 <td>{product.qty}</td>
+                                <td>{product.status ? ( <p class="text-success">Active</p>) : (<p class="text-danger"><i className="">Deactive</i></p>) }</td>
                                 <td>
                                     <Button className="me-2" onClick={() => willDelete(product.id)}>Delete</Button>
                                     <NavLink to={edit}><Button className="me-2" >Edit</Button></NavLink>

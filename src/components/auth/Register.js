@@ -9,37 +9,60 @@ import Loader from "../global/Loader";
 
 const Register = () => {
    
-    const { register, handleSubmit, formState: { errors }, getValues, reset, setError, trigger } = useForm();
+    const { register, handleSubmit, formState: { errors, isValid }, getValues, reset, setError } = useForm({
+        mode: 'onBlur',
+        reValidateMode: 'onChange',
+    });
     const [loading, SetLoading] = useState(true);
+    const [isEmailValid, setIsEmailValid] = useState(false);
     let navigate = useNavigate();
     const { user } = useUserContext();
     const apiUrl = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
-        
-        
-
         SetLoading(false);
-
     }, [])
 
     if(user.isLoggedIn){
         navigate('/products');
     }
 
-    const onSubmit = (data) =>{
-    
-        var requestUrl = `${apiUrl}user/save`;
-        axios.post(requestUrl, data)
-        .then(response => {
-            if(response.status === 200){
-                swal("Added!", "User registration sucessfully.", "success");
-                reset();
-                navigate('/login');
-            }
-        });
-    } 
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+    const onSubmit = async (data) =>{
+        
+        // await axios.post(`${apiUrl}user/emailexists`,{email:data.email})
+        // .then(response => {
+        //     if(!response.data.status){
+        //         setError("email", {
+        //             type: "validate",
+        //         });
+        //         return false;
+        //     } else {
+        //         setIsEmailValid(true);
+        //     }
+        // });
+
+        // console.log(isValid)
+        console.log("My state data")
+        sleep(2000)
+        // console.log(isEmailValid)
+        const res = await isEmailUnique(data.email);
+        console.log(res)
+        console.log(isEmailValid)
+        if(isEmailValid){
+            var requestUrl = `${apiUrl}user/save`;
+            axios.post(requestUrl, data)
+            .then((response) => {
+                if(response.status === 200){
+                    swal("Added!", "User registration sucessfully.", "success");
+                    reset();
+                    navigate('/login');
+                }
+            });
+        }
+    } 
+    
     if(loading){
         return(<Loader />);
     }
@@ -48,17 +71,20 @@ const Register = () => {
         color: "red",
     }
 
-    const isEmailUnique =  async(email) => {
+    async function isEmailUnique (email){
         await axios.post(`${apiUrl}user/emailexists`,{email})
-        .then(response => {
+        .then( (response) => {
             if(!response.data.status){
                 setError("email", {
-                    type: "emailexists",
-                    message: response.data.message
-                }, { shouldFocus: true } )
-
-                trigger("email");
-                console.log(errors.email);
+                    type: "validate",
+                });
+                // console.log("response wait false")
+                setIsEmailValid(false);
+                return false;
+            } else {
+                // console.log("response wait true")
+                setIsEmailValid(true);
+                return true;
             }
         });
     }
@@ -69,6 +95,8 @@ const Register = () => {
             <Row>
                 <Col md={{ span: 8, offset: 2 }}>
                     <h4>Register User</h4>
+                   
+                  
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Form.Group as={Col} md="12">
                             <Form.Label>Name</Form.Label>
@@ -78,18 +106,35 @@ const Register = () => {
                                 {errors.name?.type === 'minLength' && "Please enter more than 3 character"}
                             </p>
                         </Form.Group>
-                        
+                        {/* validate: isEmailUnique, */}
                         <Form.Group as={Col} md="12">
                             <Form.Label>Email</Form.Label>
                             <Form.Control {...register("email", { required: true, pattern: {
                                     value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                                     message: 'Please enter a valid email',
                                 },
-                                validate: isEmailUnique  })} type="email"  placeholder="Enter email address" ></Form.Control>
+                                // validate: async (email) => {
+                                //     await axios.post(`${apiUrl}user/emailexists`,{email})
+                                //     .then(response => {
+                                //         console.log("check condititon result");
+                                //         setError("email", {
+                                //             type: "validate",
+                                //         });
+                                //         return false;
+                                //     });
+                                    // console.log(email!=="raghu.prajapati@concettolabs.com")
+                                    // return email!=="raghu.prajapati@concettolabs.com"
+                                    // const res = isEmailUnique(email)
+                                    // await sleep(3000);
+                                    // console.log("first resd")
+                                    // console.log(res)
+                                //    return res;
+                                // },
+                            })} type="email"  placeholder="Enter email address" ></Form.Control>
                             <p style={error}>
                                 {errors.email?.type === 'required' && "Email is required"}
                                 {errors.email?.type === 'pattern' && "Please enter a valid email"}
-                                {errors.email?.type === 'emailexists' && errors.email.message}
+                                {errors.email?.type === 'validate' && "Email already exists" }
                             </p>
                         </Form.Group>
                         

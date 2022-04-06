@@ -1,3 +1,4 @@
+import Select from 'react-select';
 import axios from "axios";
 import React, { useState, useEffect } from "react"
 import { Form, Container, Button, Row, Col } from "react-bootstrap";
@@ -6,12 +7,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import swal from "sweetalert";
 import Loader from "../../global/Loader";
 
+
 const AddEdit = () => {
 
 
     let {id} = useParams();
-    const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm();
+    const { register, handleSubmit, formState: { errors }, setValue, reset, getValues } = useForm();
     const [loading, SetLoading] = useState(true);
+    const [radioChecked, setRadioChecked] = useState(1);
+    const [selectedOption, setSelectedOption] = useState();
+
     let navigate = useNavigate();
     const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -25,6 +30,11 @@ const AddEdit = () => {
                     setValue('price', dataObj.price)
                     setValue('quantity', dataObj.qty)
                     setValue('description', dataObj.description)
+                    setValue('image', dataObj.image)
+                    setValue('category', dataObj.category)
+                    setValue('status', dataObj.status)
+                    setRadioChecked(dataObj.status)
+                    setSelectedOption(dataObj.category)
                     SetLoading(false);   
                 }
             });       
@@ -37,13 +47,15 @@ const AddEdit = () => {
     }, [])
 
     const onSubmit = (data) =>{
-       
+       console.log(data)
         const formData = new FormData();
         formData.append('image', data.image[0]);
         formData.append('title', data.title);
         formData.append('price', data.price);
         formData.append('quantity', data.quantity);
         formData.append('description', data.description);
+        formData.append('category', data.category);
+        formData.append('status', data.status);
         
         let axiosConfig = {
             headers: {
@@ -82,6 +94,24 @@ const AddEdit = () => {
         color: "red",
     }
 
+    const options = [
+        { value: '1', label: 'Cloth' },
+        { value: '2', label: 'Mobile' },
+        { value: '3', label: 'Books' },
+      ];
+
+    var imageName = getValues('image');
+    if(imageName || imageName==="undefined"){
+        imageName = apiUrl + getValues('image');
+    } else {
+        imageName = apiUrl + 'uploads/default.png';
+    }
+
+    const changeOption = (e) =>{
+        setSelectedOption(e.value)
+        setValue('category', e.value)
+    }
+
     return(
         <>
         <Container>
@@ -100,20 +130,65 @@ const AddEdit = () => {
                         
                         <Form.Group as={Col} md="12">
                             <Form.Label>Price</Form.Label>
-                            <Form.Control {...register("price", { required: true })  } type="text"  placeholder="Enter price" ></Form.Control>
+                            <Form.Control {...register("price", { required: true,  pattern: /^[0-9]+$/i  })  } type="text"  placeholder="Enter price" ></Form.Control>
                             <p style={error}>
                             {errors.price?.type === 'required' && "price is required"}
+                            {errors.price?.type === 'pattern' && "Enter valid price"}
                             </p>
                         </Form.Group>
                         
                         <Form.Group as={Col} md="12">
                             <Form.Label>Quantity</Form.Label>
-                            <Form.Control {...register("quantity", { required: true })  } type="text"  placeholder="Enter quantity" ></Form.Control>
+                            <Form.Control {...register("quantity", { required: true, pattern: /^[0-9]+$/i })  } type="text"  placeholder="Enter quantity" ></Form.Control>
                             <p style={error}>
                             {errors.quantity?.type === 'required' && "quantity is required"}
+                            {errors.quantity?.type === 'pattern' && "Enter valid quantity"}
                             </p>
                         </Form.Group>
-                        
+
+
+                        <Form.Group as={Col} md="12">
+                            <Form.Label>Category {selectedOption}</Form.Label>
+                       
+                            <Select 
+                                {...register("category", { required: true })  }
+                                options={options}
+                                onChange={e => changeOption(e)}
+                                // defaultMenuIsOpen="true"
+                                defasetSelectedOption={ selectedOption }
+                            />
+                            <p style={error}>
+                                {errors.category?.type === 'required' && "Select category"}
+                            </p>
+                        </Form.Group>
+
+
+                        <Form.Group as={Col} md="12">
+                            <Form.Label>Status {radioChecked}</Form.Label><br/>
+                            <Form.Check
+                                {...register("status")}
+                                defaultChecked={ radioChecked===1 }
+                                inline
+                                label="Active"
+                                name="status"
+                                type="radio"
+                                value="1"
+                                id="inline-radio-1"
+                            />
+                            <Form.Check
+                                defaultChecked={ radioChecked===0 }
+                                {...register("status")}
+                                inline
+                                label="Deactive"
+                                name="status"
+                                type="radio"
+                                value="0"
+                                id="inline-radio-2"
+                            />
+                        </Form.Group>
+
+
+
                         <Form.Group as={Col} md="12">
                             <Form.Label>Description</Form.Label>
                             <Form.Control  {...register("description", {required:true, minLength: 10}) } as="textarea" name="description" rows="3"></Form.Control>
@@ -130,6 +205,7 @@ const AddEdit = () => {
                                 {errors.image?.type === 'required' && "image is required"}
                             </p>
                         </Form.Group>
+                        {/* <Image src={imageName} width="200"></Image> */}
 
                         <Form.Group as={Col} md="12">
                             <Button variant="primary" type="submit">Submit</Button>{' '}
