@@ -6,15 +6,19 @@ import { useCartContext } from "../../context/cartContext";
 import { useUserContext } from "../../context/userContext";
 import Loader from "../../global/Loader";
 
+
 export default function Cart(){
 
     const [loading, SetLoading] = useState(false);
-    const { cart, deleteItem, cartTotal } = useCartContext();
+    const { cart, deleteItem, cartTotal, item } = useCartContext();
     const { user } = useUserContext();
     const navigate = useNavigate();
     const apiUrl = process.env.REACT_APP_API_URL;
 
-    if(loading){
+    console.log("item")
+    console.log(item)
+
+    if(loading){    
         return(<Loader />);
     }
 

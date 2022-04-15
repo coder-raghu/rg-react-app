@@ -17,7 +17,7 @@ export default function SingleProduct (){
         await axios.post(`${apiUrl}product/show`,{ id })
         .then(response => {
             if(response.data.status){
-                SetProductDetails(response.data.data[0]);
+                SetProductDetails(response.data.data);
                 SetLoading(false);   
             }
         });

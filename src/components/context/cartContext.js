@@ -1,13 +1,11 @@
 import { createContext, useContext, useState } from "react";
 
 export const cartContext = createContext({
-    cart: null,
+    cart: [],
     cartTotal: null,
     addItem: () => {},
-    // updateItem: () => {},
     deleteItem: () => {},
     totalPrice: () => {},
-    // tax: () => {},
     // deliveryCharge: () => {},
 });
 

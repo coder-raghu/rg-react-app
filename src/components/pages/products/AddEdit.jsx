@@ -15,17 +15,23 @@ const AddEdit = () => {
     const { register, handleSubmit, formState: { errors }, setValue, reset, getValues } = useForm();
     const [loading, SetLoading] = useState(true);
     const [radioChecked, setRadioChecked] = useState(1);
-    const [selectedOption, setSelectedOption] = useState();
+    const [selectedOption, setSelectedOption] = useState(null);
 
     let navigate = useNavigate();
     const apiUrl = process.env.REACT_APP_API_URL;
+
+    const options = [
+        { 'value': '1', 'label': 'Cloth' },
+        { 'value': '2', 'label': 'Mobile' },
+        { 'value': '3', 'label': 'Books' },
+    ];
 
     useEffect(() => {
         const products = async () =>{
             await axios.post(`${apiUrl}product/show`, {id})
             .then((response) => {
                 if(response.data.status === true){
-                    const dataObj = response.data.data[0];
+                    const dataObj = response.data.data;
                     setValue('title', dataObj.title)
                     setValue('price', dataObj.price)
                     setValue('quantity', dataObj.qty)
@@ -33,8 +39,8 @@ const AddEdit = () => {
                     setValue('image', dataObj.image)
                     setValue('category', dataObj.category)
                     setValue('status', dataObj.status)
-                    setRadioChecked(dataObj.status)
                     setSelectedOption(dataObj.category)
+                    setRadioChecked(dataObj.status)
                     SetLoading(false);   
                 }
             });       
@@ -94,12 +100,6 @@ const AddEdit = () => {
         color: "red",
     }
 
-    const options = [
-        { value: '1', label: 'Cloth' },
-        { value: '2', label: 'Mobile' },
-        { value: '3', label: 'Books' },
-      ];
-
     var imageName = getValues('image');
     if(imageName || imageName==="undefined"){
         imageName = apiUrl + getValues('image');
@@ -148,14 +148,16 @@ const AddEdit = () => {
 
 
                         <Form.Group as={Col} md="12">
-                            <Form.Label>Category {selectedOption}</Form.Label>
+                            <Form.Label>Category</Form.Label>
                        
                             <Select 
                                 {...register("category", { required: true })  }
                                 options={options}
                                 onChange={e => changeOption(e)}
-                                // defaultMenuIsOpen="true"
-                                defasetSelectedOption={ selectedOption }
+                                defaultValue= { options.find(data=> {
+                                    return data.value==selectedOption
+                                }) }
+                                placeholder="Please select category"
                             />
                             <p style={error}>
                                 {errors.category?.type === 'required' && "Select category"}
@@ -164,7 +166,7 @@ const AddEdit = () => {
 
 
                         <Form.Group as={Col} md="12">
-                            <Form.Label>Status {radioChecked}</Form.Label><br/>
+                            <Form.Label>Status</Form.Label><br/>
                             <Form.Check
                                 {...register("status")}
                                 defaultChecked={ radioChecked===1 }

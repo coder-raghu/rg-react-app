@@ -30,6 +30,11 @@ const SinglePost = () => {
     
         }
         getPostDetails();
+
+        return() => {
+            // alert("I am going next page")
+        }
+
     }, []);
 
     const loadComments =  async () => {

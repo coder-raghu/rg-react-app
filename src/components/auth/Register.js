@@ -11,10 +11,10 @@ const Register = () => {
    
     const { register, handleSubmit, formState: { errors, isValid }, getValues, reset, setError } = useForm({
         mode: 'onBlur',
-        reValidateMode: 'onChange',
+        // reValidateMode: 'onChange',
     });
     const [loading, SetLoading] = useState(true);
-    const [isEmailValid, setIsEmailValid] = useState(false);
+    const [isEmailValid, setIsEmailValid] = useState(true);
     let navigate = useNavigate();
     const { user } = useUserContext();
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -44,13 +44,13 @@ const Register = () => {
         // });
 
         // console.log(isValid)
-        console.log("My state data")
-        sleep(2000)
-        // console.log(isEmailValid)
-        const res = await isEmailUnique(data.email);
-        console.log(res)
-        console.log(isEmailValid)
-        if(isEmailValid){
+        // console.log("My state data")
+        // sleep(2000)
+        // // console.log(isEmailValid)
+        // const res = await isEmailUnique(data.email);
+        // console.log(res)
+        console.log(isValid)
+        if(isValid){
             var requestUrl = `${apiUrl}user/save`;
             axios.post(requestUrl, data)
             .then((response) => {
@@ -61,6 +61,7 @@ const Register = () => {
                 }
             });
         }
+        return false
     } 
     
     if(loading){
@@ -109,19 +110,22 @@ const Register = () => {
                         {/* validate: isEmailUnique, */}
                         <Form.Group as={Col} md="12">
                             <Form.Label>Email</Form.Label>
-                            <Form.Control {...register("email", { required: true, pattern: {
+                            <Form.Control {...register("email", { required: true, 
+                                pattern: {
                                     value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                                     message: 'Please enter a valid email',
                                 },
-                                // validate: async (email) => {
-                                //     await axios.post(`${apiUrl}user/emailexists`,{email})
-                                //     .then(response => {
-                                //         console.log("check condititon result");
-                                //         setError("email", {
-                                //             type: "validate",
-                                //         });
-                                //         return false;
-                                //     });
+                                validate: async (email) => {
+                                    // await axios.post(`${apiUrl}user/emailexists`,{email})
+                                    // .then(response => {
+                                    //     if(!response.data.status){
+                                    //         setError("email", { type: "validate"});
+                                    //         return response.data.status;
+                                    //     } else {
+                                    //         return response.data.status;
+                                    //     }
+                                    // });
+                                    return true
                                     // console.log(email!=="raghu.prajapati@concettolabs.com")
                                     // return email!=="raghu.prajapati@concettolabs.com"
                                     // const res = isEmailUnique(email)
@@ -129,7 +133,7 @@ const Register = () => {
                                     // console.log("first resd")
                                     // console.log(res)
                                 //    return res;
-                                // },
+                                },
                             })} type="email"  placeholder="Enter email address" ></Form.Control>
                             <p style={error}>
                                 {errors.email?.type === 'required' && "Email is required"}

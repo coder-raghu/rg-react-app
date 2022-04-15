@@ -27,7 +27,7 @@ const Login = () => {
     }, [])
 
     const onSubmit = (data) =>{
-        SetLoading(true);
+        // SetLoading(true);
         SetLoginError( { message : '', type:'danger' } );
         var requestUrl = 'http://127.0.0.1:5000/user/login';
         axios.post(requestUrl, data)
@@ -69,7 +69,7 @@ const Login = () => {
                         
                         <Form.Group as={Col} md="12">
                             <Form.Label>Email</Form.Label>
-                            <Form.Control {...register("email", { required: true })  } type="email"  placeholder="Enter email address" ></Form.Control>
+                            <Form.Control {...register("email")  } type="text"  placeholder="Enter email address" ></Form.Control>
                             <p style={error}>
                                 {errors.email?.type === 'required' && "Email is required"}
                             </p>
@@ -77,7 +77,7 @@ const Login = () => {
                         
                         <Form.Group as={Col} md="12">
                             <Form.Label>Password</Form.Label>
-                            <Form.Control {...register("password", { required: true })  } type="password"  placeholder="Enter password" ></Form.Control>
+                            <Form.Control {...register("password")  } type="password"  placeholder="Enter password" ></Form.Control>
                             <p style={error}>
                                 {errors.password?.type === 'required' && "Password is required"}
                             </p>
