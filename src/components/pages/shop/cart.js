@@ -58,7 +58,7 @@ export default function Cart(){
                             }
                             return (
                                 <tr key={product.id}>
-                                    <td><Image centered="true" width="100" thumbnail="true" src={imageName}></Image></td>
+                                    <td className="text-center"><Image centered="true" width="60" thumbnail="true" src={imageName}></Image></td>
                                     <td><NavLink to={view}>{product.title}</NavLink></td>
                                     <td>{product.price} * {product.qty}</td>
                                     <td>{product.price * product.qty}</td>

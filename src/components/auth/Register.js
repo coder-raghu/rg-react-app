@@ -27,41 +27,34 @@ const Register = () => {
         navigate('/products');
     }
 
-    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    // const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const onSubmit = async (data) =>{
         
-        // await axios.post(`${apiUrl}user/emailexists`,{email:data.email})
-        // .then(response => {
-        //     if(!response.data.status){
-        //         setError("email", {
-        //             type: "validate",
-        //         });
-        //         return false;
-        //     } else {
-        //         setIsEmailValid(true);
-        //     }
-        // });
+        const status = await axios.post(`${apiUrl}users/checkEmail`,{email:data.email})
+        .then(async response => {
+            if(!response.data.status){
+                setIsEmailValid(false);
+                await setError("email", { type: "custom", message: response.data.message});
+                return true;
+            }
+        });
+        
+        console.log("first")
+        console.log(data)
 
-        // console.log(isValid)
-        // console.log("My state data")
-        // sleep(2000)
-        // // console.log(isEmailValid)
-        // const res = await isEmailUnique(data.email);
-        // console.log(res)
-        console.log(isValid)
-        if(isValid){
-            var requestUrl = `${apiUrl}user/save`;
+        if(isEmailValid){
+            var requestUrl = `${apiUrl}users/save`;
             axios.post(requestUrl, data)
             .then((response) => {
-                if(response.status === 200){
+                if(response.data.status){
                     swal("Added!", "User registration sucessfully.", "success");
                     reset();
                     navigate('/login');
                 }
             });
         }
-        return false
+        // return false
     } 
     
     if(loading){
@@ -72,23 +65,23 @@ const Register = () => {
         color: "red",
     }
 
-    async function isEmailUnique (email){
-        await axios.post(`${apiUrl}user/emailexists`,{email})
-        .then( (response) => {
-            if(!response.data.status){
-                setError("email", {
-                    type: "validate",
-                });
-                // console.log("response wait false")
-                setIsEmailValid(false);
-                return false;
-            } else {
-                // console.log("response wait true")
-                setIsEmailValid(true);
-                return true;
-            }
-        });
-    }
+    // async function isEmailUnique (email){
+    //     await axios.post(`${apiUrl}users/checkEmail`,{email})
+    //     .then( (response) => {
+    //         if(!response.data.status){
+    //             setError("email", {
+    //                 type: "validate",
+    //             });
+    //             // console.log("response wait false")
+    //             setIsEmailValid(false);
+    //             return false;
+    //         } else {
+    //             // console.log("response wait true")
+    //             setIsEmailValid(true);
+    //             return true;
+    //         }
+    //     });
+    // }
 
     return(
         <>
@@ -107,38 +100,31 @@ const Register = () => {
                                 {errors.name?.type === 'minLength' && "Please enter more than 3 character"}
                             </p>
                         </Form.Group>
-                        {/* validate: isEmailUnique, */}
+
                         <Form.Group as={Col} md="12">
                             <Form.Label>Email</Form.Label>
-                            <Form.Control {...register("email", { required: true, 
+                            <Form.Control {...register("email", { 
+                                required: true, 
                                 pattern: {
                                     value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                                     message: 'Please enter a valid email',
                                 },
-                                validate: async (email) => {
-                                    // await axios.post(`${apiUrl}user/emailexists`,{email})
-                                    // .then(response => {
-                                    //     if(!response.data.status){
-                                    //         setError("email", { type: "validate"});
-                                    //         return response.data.status;
-                                    //     } else {
-                                    //         return response.data.status;
-                                    //     }
-                                    // });
-                                    return true
-                                    // console.log(email!=="raghu.prajapati@concettolabs.com")
-                                    // return email!=="raghu.prajapati@concettolabs.com"
-                                    // const res = isEmailUnique(email)
-                                    // await sleep(3000);
-                                    // console.log("first resd")
-                                    // console.log(res)
-                                //    return res;
-                                },
+                                // validate: async (email) => {
+                                //     await axios.post(`${apiUrl}users/checkEmail`,{email})
+                                //     .then( async (response) => {
+                                //         if(!response.data.status){
+                                //             await setError("email", { type: "custom", message: response.data.message});
+                                //             return response.data.status;
+                                //         } else {
+                                //             return response.data.status;
+                                //         }
+                                //     });
+                                // },
                             })} type="email"  placeholder="Enter email address" ></Form.Control>
                             <p style={error}>
                                 {errors.email?.type === 'required' && "Email is required"}
                                 {errors.email?.type === 'pattern' && "Please enter a valid email"}
-                                {errors.email?.type === 'validate' && "Email already exists" }
+                                {errors.email?.type === 'custom' && errors.email.message }
                             </p>
                         </Form.Group>
                         

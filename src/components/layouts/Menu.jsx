@@ -11,9 +11,9 @@ const Menu = () => {
 
     return(
         <>
-        <Navbar bg="light" variant="light">
+        <Navbar bg="light" sticky="top">
            <Container>
-                <Navbar.Brand href="/">Shopie</Navbar.Brand>
+                <Navbar.Brand href="/"><img width={130} src="/logo/logo1.png" /></Navbar.Brand>
                 <Nav className="me-auto">
                     <NavLink className="nav-link" to="/" >Home</NavLink>
                     <NavLink className="nav-link" to="/about" >About</NavLink>

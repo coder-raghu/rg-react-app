@@ -1,7 +1,7 @@
 
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
+import { Container, Form, Button } from "react-bootstrap";
 import { useNavigate, useParams, NavLink } from "react-router-dom";
 import Loader from "../../global/Loader";
 import PostComments from "./PostComments";
@@ -53,17 +53,26 @@ const SinglePost = () => {
     return(
         <>
           <Container>
-            <NavLink to="/posts">Back</NavLink>
-            
-            <div>ID : { postDetails.id }</div>
-            <h2>Title : { postDetails.title }</h2>
-            <p><strong>Description : </strong> { postDetails.body }</p>
+            <Form className="mt-3">
+                <Form.Group className="mb-3">
+                    <Form.Label>Title</Form.Label>
+                    <Form.Control disabled  value={ postDetails.title }/>
+                </Form.Group>
+                
+                <Form.Group className="mb-3">
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control as="textarea" value={ postDetails.body } rows="5"></Form.Control>
+                </Form.Group>
+            </Form>
+            {/* <div>ID : { postDetails.id }</div> */}
+            {/* <h2>Title : </h2>
+            <p><strong>Description : </strong> </p> */}
 
             {buttonText.show && 
-                <button onClick={loadComments}>{buttonText.text}</button>
+                <Button onClick={loadComments}>{buttonText.text}</Button>
             }
             {!buttonText.show && 
-                <h3>Comments Listing</h3>
+                <h4>Comments Listing</h4>
             }
 
             <ul>

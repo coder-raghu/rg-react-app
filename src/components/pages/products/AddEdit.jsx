@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import swal from "sweetalert";
 import Loader from "../../global/Loader";
+import { useUserContext } from '../../context/userContext';
 
 
 const AddEdit = () => {
@@ -16,7 +17,7 @@ const AddEdit = () => {
     const [loading, SetLoading] = useState(true);
     const [radioChecked, setRadioChecked] = useState(1);
     const [selectedOption, setSelectedOption] = useState(null);
-
+    const { token, user } = useUserContext();
     let navigate = useNavigate();
     const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -28,7 +29,7 @@ const AddEdit = () => {
 
     useEffect(() => {
         const products = async () =>{
-            await axios.post(`${apiUrl}product/show`, {id})
+            await axios.post(`${apiUrl}products/show`, {id})
             .then((response) => {
                 if(response.data.status === true){
                     const dataObj = response.data.data;
@@ -68,14 +69,15 @@ const AddEdit = () => {
                 // 'Content-Type': 'application/json;charset=UTF-8',
                 'Content-Type': 'multipart/form-data',
                 "Access-Control-Allow-Origin": "*",
+                "x-access-token" : `${token}`
             }
-          };
-        
-        var requestUrl = `${apiUrl}product/store`;
+        };
+
+        var requestUrl = `${apiUrl}products/store`;
         if(id){
             formData.append('id', id);
             // data.id = id;
-            requestUrl = `${apiUrl}product/update`;
+            requestUrl = `${apiUrl}products/update`;
         }
     
         axios.post(requestUrl, formData, axiosConfig)
@@ -130,7 +132,7 @@ const AddEdit = () => {
                         
                         <Form.Group as={Col} md="12">
                             <Form.Label>Price</Form.Label>
-                            <Form.Control {...register("price", { required: true,  pattern: /^[0-9]+$/i  })  } type="text"  placeholder="Enter price" ></Form.Control>
+                            <Form.Control {...register("price", { required: true,  pattern: /^\d{0,4}(\.\d{0,2})?$/i  })  } type="text"  placeholder="Enter price" ></Form.Control>
                             <p style={error}>
                             {errors.price?.type === 'required' && "price is required"}
                             {errors.price?.type === 'pattern' && "Enter valid price"}

@@ -35,9 +35,9 @@ export default function Users(){
 
     return (
         <>
-        <Container>
+        <Container className="mt-3">
             <h4>Users Listing</h4>
-            <Table responsive bordered hover size="sm">
+            <Table responsive striped bordered hover size="sm">
                 <thead>
                     <tr>
                         <th>Name</th>

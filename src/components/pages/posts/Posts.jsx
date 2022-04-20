@@ -29,13 +29,13 @@ export default function Posts(){
 
     return(
         <>
-        <Container>
+        <Container className="mt-3">
             <h4>Posts Listing</h4>
-            <Table responsive bordered hover size="sm">
+            <Table responsive striped bordered hover size="sm">
                 <thead>
                     <tr>
-                        <th>id</th>
-                        <th>title</th>
+                        <th>#</th>
+                        <th>Title</th>
                         <th>Actions</th>
                     </tr>
                 </thead>

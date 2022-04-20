@@ -36,9 +36,9 @@ export function CartContextProvider( {children} ){
         // var cartProduct = cart.length && cart.find(item => item.id===id);
         
         setCart((...prevState) => {
-            var mycart = [...cart, pData ];
+            var mycart = [...prevState, pData ];
             localStorage.setItem('shopie-cart', JSON.stringify(mycart));
-            return [...cart, pData ] 
+            return [...prevState, pData ] 
         });
         calculateTotalPrice(price)
     }

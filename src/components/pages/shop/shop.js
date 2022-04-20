@@ -1,192 +1,212 @@
 import axios from "axios";
-import { useReducer } from "react";
 import { useEffect, useState } from "react";
 import { Container, Button, Card, Col, Row, Form } from "react-bootstrap";
+import { useForm } from "react-hook-form";
 import { useNavigate, NavLink, useParams, useSearchParams } from "react-router-dom";
 import swal from "sweetalert";
-// import cartReducer from "../../../reducer/cartReducer";
 import { useCartContext } from "../../context/cartContext";
 import { useUserContext } from "../../context/userContext";
 import Loader from "../../global/Loader";
+import 'rc-slider/assets/index.css';
+import Slider from 'rc-slider';
+import queryString from "query-string";
 
 
-export default function Shop(){
-
-    const [loading, SetLoading] = useState(true);
+export default function Shop() {
+    
+    var filterObj =  {search:'',sort:'',newest:'',minPrice:'',maxPrice:''};
+    const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState();
-    const { cart, addItem } = useCartContext();
-    // const [quantity, setQuantity] = useState([]);
+    const [minPrice, setMinPrice] = useState();
+    const [maxPrice, setMaxPrice] = useState();
+    const [selectedMinPrice, setSelectedMinPrice] = useState();
+    const [selectedMaxPrice, setSelectedMaxPrice] = useState();
+    const [filterData, setFilterData] = useState(filterObj);
     const { user } = useUserContext();
+    const { cart, addItem } = useCartContext();
     const navigate = useNavigate();
-    const param = useParams();
+    // const param = useParams();
+    const { register, handleSubmit, getValues, setValue } = useForm();
     let [searchParams] = useSearchParams();
     const apiUrl = process.env.REACT_APP_API_URL;
 
-    // const initialState = { item:[], totalAmount:'', totalItem:'' }
-    // const [state, dispatch] = useReducer(cartReducer, initialState);
+    const querySort = searchParams.get('sort')
+    const queryNewest = searchParams.get('newest');
+    const querySearch = searchParams.get('search');
+    const queryMinPrice = searchParams.get('minPrice');
+    const queryMaxPrice = searchParams.get('maxPrice');
+    // setFilterData({...filterData,search:querySearch,sort:querySort,newest:queryNewest,minPrice:queryMinPrice,maxPrice:queryMaxPrice})
 
-    // console.log("first")
-    // console.log(searchParams.get('sort'))
+    
 
-    async function getProducts(sortType=null, newest=null){
-        
-        var url = `${apiUrl}products`;
-        
-        const querySort = searchParams.get('sort')
-        if(querySort!=null && (sortType===querySort || sortType===null)) {
-            sortType = querySort;
-        }
-        
-        const queryNewest = searchParams.get('newest');
-        if(queryNewest!=null && newest===queryNewest) {
-            newest = queryNewest;
-        }
+    async function getProducts() {
 
-        if(sortType!=null){
-            navigate(`/shop/?sort=${sortType}`);
-            url = `${apiUrl}products/?sort=${sortType}`;
-        } 
-        if(newest!=null){
-            navigate(`/shop/?newest=${newest}`);
-            url = `${apiUrl}products/?newest=${newest}`;
-            
-        }
-        const response = await axios.get(url); 
-        if(response.status===200){
+        var apiCallUrl = `${apiUrl}products`;
+
+        var url = `?${queryString.stringify(filterData)}`;
+        navigate(`/shop/${url}`);
+        
+        const response = await axios.get(`${apiCallUrl}${url}`);
+        if (response.data.status === true) {
             setProducts(response.data.data);
-            SetLoading(false);   
+            setMinPrice(response.data.other.min);
+            setMaxPrice(response.data.other.max);
+            setLoading(false);
         }
     }
-
+  
     useEffect(() => {
-
+        const searchVal = getValues('search')
+        if(searchVal){
+            setValue('search', searchVal);
+        } else {
+            setValue('search', '');
+        }
         getProducts();
 
-    }, []);
+    }, [filterData]);
 
-    const sorting = (event) =>{
+    const sorting = (event) => {       
         const sortType = event.target.value;
-        SetLoading(true)
-        getProducts(sortType);
+        setFilterData({...filterData,sort: sortType, newest: ''})
     }
-    const newest = (event) =>{
+    const newest = (event) => {
         const sortType = event.target.value;
-        SetLoading(true)
-        getProducts('',sortType);
+        setFilterData({...filterData, newest: sortType, sort: '' })
     }
 
-    if(user.isLoggedIn){
+    const onSubmit = (data) => {
+        const search = data.search
+        setFilterData({...filterData, search:search })
+    }
+
+    const getPrice = async (value) => {
+        const minPrice = value[0];
+        const maxPrice = value[1]
+        setSelectedMinPrice(value[0])
+        setSelectedMaxPrice(value[1])
+        setFilterData({...filterData, maxPrice:maxPrice, minPrice:minPrice })
+    }  
+
+    if (user.isLoggedIn) {
         navigate('/login');
     }
 
-    if(loading){
-        return(<Loader />);
+    if (loading) {
+        return ( < Loader /> );
     }
 
-    // const incrementQuantity = (id) => {
-        // setQuantity([...quantity, { "id" : id, 'quantity': quantity+1 } ]);
-        // console.log(quantity)
-        // setQuantity(quantity + 1)
-    // }
-    
-    // const decrementQuantity = (id) => {
-        // console.log("product id")
-        // console.log(id);
-        // if(quantity<=1){
-            // setQuantity(1);
-            // setQuantity([...quantity, { "id" : id, 'quantity': 1 } ]);
-        // } else {
-            // setQuantity(quantity - 1);
-            // setQuantity([...quantity, { "id" : id, 'quantity': quantity - 1 } ]);
-        // }
-    // }
-
-    const addToCart = (product) =>{
-        addItem( product );
-        // dispatch({ type: 'addItem', payload: product });
-
+    const addToCart = (product) => {
+        addItem(product);
         swal("Added!", "Your product has been added to cart!", "success");
-        // alert("I am clicked for add to cart");
+        // dispatch({ type: 'addItem', payload: product });
     }
-   
     
-
-    return(
-        <>
+    const resetFilter = () => {
+        setFilterData(filterObj)
+        navigate('/shop')
+    }
+    
+    return ( <>
         <Container>
-                <h4>Shop</h4>
 
-                <Form.Group as={Col} md="12">
-                    <Form.Label>Sort By: &nbsp;&nbsp;&nbsp;&nbsp;</Form.Label>
-                    <Form.Check
-                        inline
-                        label="Low To high"
-                        name="sorting"
-                        type="radio"
-                        value="ASC"
-                        id="inline-radio-1"
-                        onChange={sorting}
-                        defaultChecked={ searchParams.get('sort')==='ASC' }
-                    />
-                    <Form.Check
-                        inline
-                        label="High to low"
-                        name="sorting"
-                        type="radio"
-                        value="DESC"
-                        id="inline-radio-2"
-                        onChange={sorting}
-                        defaultChecked={ searchParams.get('sort')==="DESC" }
-                    />
-                    <Form.Check
-                        inline
-                        label="Newest First"
-                        name="sorting"
-                        type="radio"
-                        value="DESC"
-                        id="inline-radio-3"
-                        onChange={newest}
-                        defaultChecked={ searchParams.get('newest')==="DESC" }
-                    />
-                </Form.Group>
-                <Row>
-                   {products && products.map((product) => {
-                        const view = `/productDetails/${product.id}`;
-                        var imageName = '';
-                        if(product.image){
-                            imageName = apiUrl + product.image;
-                        } else {
-                            imageName = apiUrl + 'uploads/default.png';
-                        }
-                        return (
-                            <>
-                            <Col md="4" className="mb-5" key={product.id}>
-                                <Card>
-                                    <Card.Img variant="top" src={imageName} />
-                                    <Card.Body>
-                                        <Card.Title><NavLink to={view}>{product.title.substring(0, 30) + "..."}</NavLink></Card.Title>
-                                        <Card.Text>{product.description.substring(0, 50) + "..."}</Card.Text>
-                                        <p>${product.price}</p>
-                                        {/* <Button variant="primary" className="me-2" onClick={()=> decrementQuantity(product.id)}>-</Button>
-                                        <input type="text" style={{ width: '50px', 'textAlign':'center' }} name="quantity" value={quantity.filter((cart) => {
-                                                console.log(product.id === cart.id ? cart.quantity : 1)
-                                                return product.id === cart.id ? cart.quantity : 1;
-                                            })}></input>
-                                        <Button variant="primary" className="ms-2" onClick={()=> incrementQuantity(product.id) }>+</Button> */}
-                                        <Button variant="primary" className="ms-2" onClick={()=> addToCart(product)}>Add to cart</Button>
-                                        
-                                    </Card.Body>
-                                </Card>
-                            </Col>
-                            </>
-                        )
-                    })}
-                </Row>
+        <Row className="mb-4 mt-4">
+            <Col md={5}>
+            <Form.Group>
+                <Form.Label >Sort By:&nbsp; &nbsp; </Form.Label> 
+                <Form.Check inline label = "Low To high"
+                    name = "sorting"
+                    type = "radio"
+                    value = "ASC"
+                    id = "inline-radio-1"
+                    onChange = { sorting }
+                    defaultChecked = { searchParams.get('sort') === 'ASC' }
+                /> 
+                <Form.Check inline label = "High to low"
+                    name = "sorting"
+                    type = "radio"
+                    value = "DESC"
+                    id = "inline-radio-2"
+                    onChange = { sorting }
+                    defaultChecked = { searchParams.get('sort') === "DESC" }
+                    /> 
+                <Form.Check inline label = "Newest First"
+                    name = "sorting"
+                    type = "radio"
+                    value = "DESC"
+                    id = "inline-radio-3"
+                    onChange = { newest }
+                    defaultChecked = { searchParams.get('newest') === "DESC" }
+                />
+            </Form.Group> 
+            </Col>
+            <Col md={3}>
+                Price Filter: {selectedMinPrice} - {selectedMaxPrice}
+                <Slider 
+                    range
+                    step={100}
+                    // marks={{ 1:minPrice, 1250:maxPrice }}
+                    min={minPrice}
+                    max={maxPrice}
+                    defaultValue={[minPrice, maxPrice]}
+                    onChange={(value) => getPrice(value)}
+                    tipFormatter={value => <span className="tooltip">{value}€</span>}
+                />
+            </Col>
+            <Col md={4}>
+                <Form onSubmit = { handleSubmit(onSubmit) }>
+                    <Row>
+                        <Col md={8}>
+                            <Form.Control {...register("search") } placeholder = "Search" ></Form.Control> 
+                        </Col>
+                        <Col>
+                            <Button variant = "outline-primary"type = "submit" > Search </Button>{' '} 
+                        </Col>
+                    </Row> 
+                </Form>
+            </Col>
+            {/* <Col md={3}>
+                <Button onClick={resetFilter} className="float-center">Reset</Button>
+            </Col> */}
+        </Row>
 
-        </Container>
+        <Row> {
+            products && products.map((product) => {
+                const view = `/productDetails/${product.id}`;
+                var imageName = '';
+                if (product.image) {
+                    imageName = apiUrl + product.image;
+                } else {
+                    imageName = apiUrl + 'uploads/default.png';
+                }
+                return ( 
+                    <>
+                    <Col md = "4"className = "mb-5"key = { product.id } >
+                        <Card >
+                            <Card.Img variant = "top"src = { imageName }/> 
+                            <Card.Body >
+                                <Card.Title > <NavLink to = { view } > { product.title.substring(0, 30) + "..." } </NavLink></Card.Title >
+                                <Card.Text > { product.description.substring(0, 50) + "..." } </Card.Text> 
+                                <p> $ { product.price } </p> {
+                                /* <Button variant="primary" className="me-2" onClick={()=> decrementQuantity(product.id)}>-</Button>
+                                    <input type="text" style={{ width: '50px', 'textAlign':'center' }} name="quantity" value={quantity.filter((cart) => {
+                                            console.log(product.id === cart.id ? cart.quantity : 1)
+                                            return product.id === cart.id ? cart.quantity : 1;
+                                        })}></input>
+                                    <Button variant="primary" className="ms-2" onClick={()=> incrementQuantity(product.id) }>+</Button> */
+                            } 
+                                <Button variant = "primary" className = "ms-2" onClick = { () => addToCart(product) } > Add to cart </Button>
+                            </Card.Body> 
+                    </Card> 
+                    </Col> 
+                    </>
+                )
+            })
+        } 
+        </Row>
+
+        </Container> 
         </>
     )
 
 }
-
-

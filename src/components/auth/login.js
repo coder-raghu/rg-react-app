@@ -14,7 +14,7 @@ const Login = () => {
     const [loading, SetLoading] = useState(false);
     const [loginError, SetLoginError] = useState( { message : '', type: 'danger' } );
     let navigate = useNavigate();
-    const {user, logIn} = useUserContext();
+    const {user, logIn, token} = useUserContext();
 
     useEffect(() => {
 
@@ -29,13 +29,16 @@ const Login = () => {
     const onSubmit = (data) =>{
         // SetLoading(true);
         SetLoginError( { message : '', type:'danger' } );
-        var requestUrl = 'http://127.0.0.1:5000/user/login';
+        var requestUrl = 'http://127.0.0.1:5000/users/login';
         axios.post(requestUrl, data)
         .then(response => {
             if(response.status===200 && response.data.status){
                 // swal("Loggedin!", "Loggedin successfully", "success");
                 SetLoginError( { message : 'Loggedin successfully', type:'success' } );
-                logIn(response.data.data);
+                let logiUserData = response.data.data;
+                logiUserData.authToken = response.data.token; //append jwt token
+                // console.log(logiUserData)
+                logIn(logiUserData);
                 reset();
                 setTimeout(function () { 
                     navigate('/products');

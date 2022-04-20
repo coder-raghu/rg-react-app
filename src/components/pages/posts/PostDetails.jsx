@@ -1,6 +1,6 @@
 import { Button } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
-
+import { FaEye } from "react-icons/fa";
 
 const PostDetails = (post) => {
     
@@ -13,7 +13,7 @@ const PostDetails = (post) => {
             <tr key={id}>
                 <td>{id}</td>
                 <td>{title}</td>
-                <td><NavLink to={url}><Button>View</Button></NavLink></td>
+                <td className="text-center"><NavLink to={url}><Button size="sm"><FaEye /></Button></NavLink></td>
             </tr>
         </>
     );
