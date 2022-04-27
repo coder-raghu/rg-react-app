@@ -61,14 +61,14 @@ const Login = () => {
         <>
         <Container>
             <Row>
-                <Col md={{ span: 8, offset: 2 }}>
-                    <h4>Login</h4>
+                <Col md={{ span: 6, offset: 3 }}>
+                    <h4 className='text-center mt-4 mb-4'>Login</h4>
                     
                     {loginError.message && <Alert variant={loginError.type}>
                         <p className="mb-0">{loginError.message}</p>
                     </Alert>}
 
-                    <Form onSubmit={handleSubmit(onSubmit)}>                      
+                    <Form onSubmit={handleSubmit(onSubmit)} className="border p-4 shadow rounded">                      
                         
                         <Form.Group as={Col} md="12">
                             <Form.Label>Email</Form.Label>

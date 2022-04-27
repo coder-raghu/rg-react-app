@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Container, Button, Card, Col, Row, Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { useNavigate, NavLink, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, NavLink, useSearchParams } from "react-router-dom";
 import swal from "sweetalert";
 import { useCartContext } from "../../context/cartContext";
 import { useUserContext } from "../../context/userContext";
@@ -23,18 +23,17 @@ export default function Shop() {
     const [selectedMaxPrice, setSelectedMaxPrice] = useState();
     const [filterData, setFilterData] = useState(filterObj);
     const { user } = useUserContext();
-    const { cart, addItem } = useCartContext();
+    const { addItem } = useCartContext();
     const navigate = useNavigate();
-    // const param = useParams();
     const { register, handleSubmit, getValues, setValue } = useForm();
     let [searchParams] = useSearchParams();
     const apiUrl = process.env.REACT_APP_API_URL;
 
-    const querySort = searchParams.get('sort')
-    const queryNewest = searchParams.get('newest');
-    const querySearch = searchParams.get('search');
-    const queryMinPrice = searchParams.get('minPrice');
-    const queryMaxPrice = searchParams.get('maxPrice');
+    // const querySort = searchParams.get('sort')
+    // const queryNewest = searchParams.get('newest');
+    // const querySearch = searchParams.get('search');
+    // const queryMinPrice = searchParams.get('minPrice');
+    // const queryMaxPrice = searchParams.get('maxPrice');
     // setFilterData({...filterData,search:querySearch,sort:querySort,newest:queryNewest,minPrice:queryMinPrice,maxPrice:queryMaxPrice})
 
     
@@ -100,11 +99,6 @@ export default function Shop() {
         addItem(product);
         swal("Added!", "Your product has been added to cart!", "success");
         // dispatch({ type: 'addItem', payload: product });
-    }
-    
-    const resetFilter = () => {
-        setFilterData(filterObj)
-        navigate('/shop')
     }
     
     return ( <>

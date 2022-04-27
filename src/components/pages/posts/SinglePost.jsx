@@ -53,7 +53,8 @@ const SinglePost = () => {
     return(
         <>
           <Container>
-            <Form className="mt-3">
+            <h4 className='text-center mt-4 mb-4'>{postDetails.title}</h4>
+            <Form>
                 <Form.Group className="mb-3">
                     <Form.Label>Title</Form.Label>
                     <Form.Control disabled  value={ postDetails.title }/>
@@ -64,10 +65,7 @@ const SinglePost = () => {
                     <Form.Control as="textarea" value={ postDetails.body } rows="5"></Form.Control>
                 </Form.Group>
             </Form>
-            {/* <div>ID : { postDetails.id }</div> */}
-            {/* <h2>Title : </h2>
-            <p><strong>Description : </strong> </p> */}
-
+          
             {buttonText.show && 
                 <Button onClick={loadComments}>{buttonText.text}</Button>
             }

@@ -6,6 +6,7 @@ import swal from "sweetalert";
 import { useUserContext } from "../../context/userContext";
 import Loader from "../../global/Loader";
 import { FaPencilAlt,FaTrashAlt } from "react-icons/fa";
+import DataTable from 'react-data-table-component';
 
 export default function Products(){
 
@@ -70,22 +71,65 @@ export default function Products(){
             }
         });
     }
-    let active = 2;
-    let items = [];
-    for (let number = 1; number <= totalProducts; number++) {
-        items.push(
-            <Pagination.Item key={number} active={number === active}>
-                {number}
-            </Pagination.Item>,
-        );
-    }
+
+    const columns = [
+        {
+            name: 'Image',
+            selector: row => {
+                let imageUrl = '';
+                if(row.image){
+                    imageUrl = apiUrl + row.image;
+                } else {
+                    imageUrl = apiUrl + 'uploads/default.png';
+                }
+                return <Image width="60" thumbnail="true" src={imageUrl}></Image>
+            },
+        },
+        {
+            name: 'Title',
+            selector: row => {
+                const view = `/productDetails/${row.id}`;
+                return <NavLink to={view}>{row.title}</NavLink>
+            },
+        },
+        {
+            name: 'Price',
+            selector: row => row.price,
+        },
+        {
+            name: 'Quantity',
+            selector: row => row.qty,
+        },
+        {
+            name: 'Status',
+            selector: row => row.status,
+        },
+        {
+            name: 'Action',
+            selector: row => {
+                const edit = `/manage/${row.id}`;
+                return(
+                    <>
+                    <Button className="me-2" size="sm" onClick={() => willDelete(row.id)}><FaTrashAlt /></Button>
+                    <NavLink to={edit}><    Button className="me-2" size="sm"><FaPencilAlt /></Button></NavLink>
+                    </>
+                )
+            }
+        },
+    ];
 
     return(
         <>
-        <Container className="mt-3">
+        <Container>
             <NavLink to="/manage"><Button className="float-end mb-1">Add new</Button></NavLink>
-            <h4>Products Listing</h4>
-            <Table striped bordered hover size="sm">
+            <h4 className='text-center mt-4 mb-4'>Products Listing</h4>
+            <DataTable
+                // title="Products Listing"
+                columns={columns}
+                data={products}
+                pagination
+            />
+            {/* <Table striped bordered hover size="sm">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -99,7 +143,6 @@ export default function Products(){
                 </thead>
                 <tbody>
                     {products && products.map((product) => {
-                        // return (<ProductList data={product}/>)
                         const view = `/productDetails/${product.id}`;
                         const edit = `/manage/${product.id}`;
                         var imageName = '';
@@ -124,11 +167,7 @@ export default function Products(){
                         )
                     })}
                 </tbody>
-            </Table>
-            <div>
-                <Pagination>{items}</Pagination>
-                <br />
-            </div>
+            </Table> */}
         </Container>
         </>
     )

@@ -29,8 +29,8 @@ export default function Posts(){
 
     return(
         <>
-        <Container className="mt-3">
-            <h4>Posts Listing</h4>
+        <Container>
+            <h4 className='text-center mt-4 mb-4'>Posts Listing</h4>
             <Table responsive striped bordered hover size="sm">
                 <thead>
                     <tr>

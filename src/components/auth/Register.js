@@ -11,7 +11,12 @@ const Register = () => {
    
     const { register, handleSubmit, formState: { errors, isValid }, getValues, reset, setError } = useForm({
         mode: 'onBlur',
-        // reValidateMode: 'onChange',
+        reValidateMode: 'onChange',
+        defaultValues: {
+            'name' : 'Raghu check email exists',
+            'password' : '123123',
+            'confirm_password' : '123123'
+        },
     });
     const [loading, SetLoading] = useState(true);
     const [isEmailValid, setIsEmailValid] = useState(true);
@@ -27,16 +32,18 @@ const Register = () => {
         navigate('/products');
     }
 
-    // const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const onSubmit = async (data) =>{
-        
+        await sleep(2000);
+
         const status = await axios.post(`${apiUrl}users/checkEmail`,{email:data.email})
         .then(async response => {
             if(!response.data.status){
                 setIsEmailValid(false);
                 await setError("email", { type: "custom", message: response.data.message});
                 return true;
+                console.log("in response section")
             }
         });
         
@@ -87,11 +94,11 @@ const Register = () => {
         <>
         <Container>
             <Row>
-                <Col md={{ span: 8, offset: 2 }}>
-                    <h4>Register User</h4>
+                <Col md={{ span: 6, offset: 3 }}>
+                    <h4 className='text-center mt-4 mb-4'>Register User</h4>
                    
                   
-                    <Form onSubmit={handleSubmit(onSubmit)}>
+                    <Form onSubmit={handleSubmit(onSubmit)} className="border p-4 shadow rounded">
                         <Form.Group as={Col} md="12">
                             <Form.Label>Name</Form.Label>
                             <Form.Control {...register("name", { required: true, minLength: 3 })} type="text" placeholder="Enter name"></Form.Control>
@@ -109,17 +116,17 @@ const Register = () => {
                                     value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                                     message: 'Please enter a valid email',
                                 },
-                                // validate: async (email) => {
-                                //     await axios.post(`${apiUrl}users/checkEmail`,{email})
-                                //     .then( async (response) => {
-                                //         if(!response.data.status){
-                                //             await setError("email", { type: "custom", message: response.data.message});
-                                //             return response.data.status;
-                                //         } else {
-                                //             return response.data.status;
-                                //         }
-                                //     });
-                                // },
+                                validate: async (email) => {
+                                    await axios.post(`${apiUrl}users/checkEmail`,{email})
+                                    .then( async (response) => {
+                                        if(!response.data.status){
+                                            await setError("email", { type: "custom", message: response.data.message});
+                                            return response.data.status;
+                                        } else {
+                                            return response.data.status;
+                                        }
+                                    });
+                                },
                             })} type="email"  placeholder="Enter email address" ></Form.Control>
                             <p style={error}>
                                 {errors.email?.type === 'required' && "Email is required"}

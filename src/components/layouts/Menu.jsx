@@ -11,27 +11,49 @@ const Menu = () => {
 
     return(
         <>
-        <Navbar bg="light" sticky="top">
+        <Navbar bg="light" className="jumbotron">
            <Container>
                 <Navbar.Brand href="/"><img width={130} src="/logo/logo1.png" /></Navbar.Brand>
-                <Nav className="me-auto">
-                    <NavLink className="nav-link" to="/" >Home</NavLink>
-                    <NavLink className="nav-link" to="/about" >About</NavLink>
-                    <NavLink className="nav-link" to="/contact" >Contact</NavLink>
-                    <NavLink className="nav-link" to="/users" >Users</NavLink>
-                    <NavLink className="nav-link" to="/posts" >Posts</NavLink>
+                <Nav className="me-auto navbar sticky-top navbar-light bg-light">
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to="/" >Home</NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to="/about" >About</NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to="/contact" >Contact</NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to="/users" >Users</NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to="/posts" >Posts</NavLink>
+                    </li>
                     {user.isLoggedIn && (
                         <>
-                        <NavLink className="nav-link" to="/products" >Products</NavLink>
-                        <NavLink className="nav-link" to="/videosdk" >VideoSDK</NavLink>
+                        <li className="nav-item">
+                            <NavLink className="nav-link" to="/products" >Products</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className="nav-link" to="/videosdk" >VideoSDK</NavLink>
+                        </li>
                         </>
                     )}
                     {!user.isLoggedIn && (
                         <>
-                        <NavLink className="nav-link" to="/shop" >Shop</NavLink>
-                        <NavLink className="nav-link" to="/cart" >Cart</NavLink>
-                        <NavLink className="nav-link" to="/login" >Login</NavLink>
-                        <NavLink className="nav-link" to="/register" >Register</NavLink>
+                        <li className="nav-item">
+                            <NavLink className="nav-link" to="/shop" >Shop</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className="nav-link" to="/cart" >Cart</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className="nav-link" to="/login" >Login</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className="nav-link" to="/register" >Register</NavLink>
+                        </li>
                         </>
                     )}
                 </Nav>

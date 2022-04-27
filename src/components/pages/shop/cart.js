@@ -34,7 +34,7 @@ export default function Cart(){
     return(
         <>
         <Container>
-                <h4>Cart page</h4>
+                <h4 className='text-center mt-4 mb-4'>Cart page</h4>
                 {cart.length > 0 ? (
                     <>
                     <Table bordered hover size="sm">

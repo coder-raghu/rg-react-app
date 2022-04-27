@@ -32,14 +32,10 @@ export function CartContextProvider( {children} ){
 
         const key = new Date().getTime();
         var pData = { key, qty:1, id, title, image, price };
-        
+        console.log(pData)
         // var cartProduct = cart.length && cart.find(item => item.id===id);
         
-        setCart((...prevState) => {
-            var mycart = [...prevState, pData ];
-            localStorage.setItem('shopie-cart', JSON.stringify(mycart));
-            return [...prevState, pData ] 
-        });
+        setCart((...cart) => [...cart, pData ] );
         calculateTotalPrice(price)
     }
     

@@ -7,6 +7,7 @@ const About = () => {
     return(
         <>
         <Container>
+            <h4 className='text-center mt-4 mb-4'>Know about us</h4>
             <Tab.Container id="left-tabs-example" defaultActiveKey="first">
                 <Row>
                     <Col sm={3}>
