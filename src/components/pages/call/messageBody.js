@@ -4,8 +4,7 @@ import { ListGroup } from "react-bootstrap";
 const messageBody = (data) => {
    
     const {message, name, position, msgTime}  = data.data;
-    console.log(message)
-    function makeid(length) {
+    function makeid(length=10) {
         var result           = '';
         var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         var charactersLength = characters.length;
@@ -17,16 +16,14 @@ const messageBody = (data) => {
     
     return(
         <>
-        {/* <li>{data.data.name} - {data.data.message} - {data.data.position}</li> */}
-        {position == 'left' ? 
-            (<p skey={makeid(10)} className="p-2 mb-2 border shadow">
+        {position === 'left' ? 
+            (<p skey={makeid()} className="p-2 mb-2 border shadow">
                 {message}-<small>{msgTime}</small>
             </p>) 
-            : (<p skey={makeid(10)} className="text-end p-2 mb-2 border shadow">
+            : (<p skey={makeid()} className="text-end p-2 mb-2 border shadow">
                 {message}-<small>{msgTime}</small>
                 </p>)
          }
-        
         </>
     )
 }

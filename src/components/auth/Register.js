@@ -43,7 +43,6 @@ const Register = () => {
                 setIsEmailValid(false);
                 await setError("email", { type: "custom", message: response.data.message});
                 return true;
-                console.log("in response section")
             }
         });
         

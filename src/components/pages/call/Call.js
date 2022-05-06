@@ -4,7 +4,8 @@ import { Button, Container, Row, Col, Form, ListGroup } from "react-bootstrap";
 import { io } from "socket.io-client";
 import { useUserContext } from "../../context/userContext";
 import Messagebody from "./messageBody";
-// import socket from "../../../config/socket";
+import axios from "axios";
+import Loader from "../../global/Loader";
 
 export default function Call() {
 
@@ -22,50 +23,63 @@ export default function Call() {
     // }
     // const [state, dispatch] = useReducer(reducer , init)
 
-
     const { user } = useUserContext();
+
+    const [loading, SetLoading] = useState(true);
     const [message, setMessage] = useState('');
     const [messageList, setMessageList] = useState([]);
-    // const [liveUsers, setLiveUsers] = useState([]);
-    const [userSocket, setUserSocket] = useState();
+    const [selectedUserID, setSelectedUserID] = useState();
+    const [allUsers, setAllUsers] = useState();
+    const [socketID, setSocketID] = useState();
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const SOCKET_URL = process.env.REACT_APP_CHAT_URL;
     const senderID = user.id;
-    // const username = user.name;
-    const receiverID = 15;
+    const name = user.name;
     
-    const socket = io("192.168.1.30:5000",{ autoConnect: false });
     
-    socket.on("connect", (socket) => {
-        console.log("Connected")
-        // setUserSocket(socket)
-    });
-    // console.log(username)
-
-    useEffect(()=>{
-        // const socketConnect = () => {
-        //     socket.auth =  { name:username, userID:senderID } ;
-        //     socket.connect();
-        //     // console.log(socket.id)
-        //     console.log("connected")
+    async function getUsers(){
+        try {
+            const response = await axios.get(`${apiUrl}users`);
+            if(response.data.status){
+                SetLoading(false);
+                setAllUsers(response.data.data);
+            }
+        } catch (error) {
+            SetLoading(false);
+            console.log("my error is "+ error.message);
+        }
+    }
+        
+    const socket = io(SOCKET_URL, { autoConnect: false});
+    const socketConnect = async (id) => {
+        // if(id){
+            socket.auth = await { name, senderID, receiverID:id };
+            await socket.connect();
+            console.log(socket)
+            setSocketID(socket.id)
+            console.log("connected")
         // }
-        // socketConnect();
-    })
+    }
+    useEffect(()=>{
+        socketConnect();
+        getUsers();
+    }, [])
     
-   
     // Send user typed message
     const onChangeSetMessage = (event) => {
         setMessage(event.target.value);
     }
     
     // Send message to the server
-    const sendMessage = async () => {
+    const sendMessage = () => {
         setMessageList(messageList => [...messageList, {message, name:"Raghu",msgTime:getTime(), position:'right'}]);
         let msgObj = {
             'sender_id': senderID,
-            'receiver_id': receiverID,
+            'receiver_id': selectedUserID,
             'type': 'message',
             'message' : message,
             }
-        await socket.emit("sendChatToServer", msgObj);
+        socket.emit("sendChatToServer", msgObj);
         setMessage('')
     }
 
@@ -75,20 +89,32 @@ export default function Call() {
             sendMessage();
         }
     }
-    
-        // socket.on("liveUsers", (data) => {
-    //     setLiveUsers(users => [...users, data])
-    // });
-    
-
+  
     // Received message from server.
     socket.on("sendChatToClient", (data) => {
+        console.log("receive data")
+        console.log(data);
         var msgTime = moment(data.createdAt).format('h:mm a');
         setMessageList(messageList => [...messageList, {message:data.message, name:data.sender_name,msgTime:msgTime, position:'left'}]);
+    });
+    
+    // Get live users list
+    socket.on("liveUsers", (data) => {
+        console.log("Live user list")
+        console.log(data);
     });
 
     const getTime = () => {
         return moment().format('h:mm a');
+    }
+
+    const setUserID = (id) => {
+        setSelectedUserID(id);
+        // socketConnect(id)
+    }
+
+    if(loading){
+        return(<Loader />);
     }
     return (
         <>
@@ -96,15 +122,15 @@ export default function Call() {
                 <h4 className='text-center mt-4 mb-4'>Chat</h4>
                 <Row>
                     <Col md={4}>
-                    <ListGroup>
-                        {/* {liveUsers.length>=0 && liveUsers.forEach(element => {
-                            <ListGroup.Item>{element.info.name}</ListGroup.Item>
-                        })} */}
-
-                        <ListGroup.Item>John Doe</ListGroup.Item>
-                        <ListGroup.Item>John Doe</ListGroup.Item>
-                        <ListGroup.Item>John Doe</ListGroup.Item>
-                        <ListGroup.Item>John Doe</ListGroup.Item>
+                        {selectedUserID}
+                    <ListGroup> 
+                        {allUsers && allUsers.map(user => {
+                            return (
+                                <>
+                                    <ListGroup.Item onClick={()=>setUserID(user.id)} className={user.id===selectedUserID ? 'active': ''} key={user.userID}>{user.name}</ListGroup.Item>
+                                </>
+                            )
+                        })}
                     </ListGroup>
                     </Col>
                     <Col md={8}>
@@ -121,17 +147,20 @@ export default function Call() {
                         </section>
                         <section className="border p-4 shadow rounded">
                         <Row>
-                            {userSocket}
-                            <Col md={10}>                            
-                                <Form.Group>
-                                    <Form.Control name ="message" value={message} type="text" placeholder="Enter message" onChange={(e)=>onChangeSetMessage(e)} onKeyPress={(e) => onMessageKeyPress(e)}></Form.Control>
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Group>
-                                    <Button variant="primary" disabled={message.length<1} onClick={sendMessage} type="submit" >Send</Button>
-                                </Form.Group>
-                            </Col>
+                                <Col md={10}>
+                                    Loggedin User id : {senderID} <br/>
+                                    receiver_id : {selectedUserID}     <br/>                      
+                                    socket Token: {socketID}
+                                    <Form.Group>
+                                        <Form.Control name ="message" value={message} type="text" placeholder="Enter message" onChange={(e)=>onChangeSetMessage(e)} onKeyPress={(e) => onMessageKeyPress(e)}></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group>
+                                        <Button variant="primary" disabled={message.length<1} onClick={sendMessage} type="submit" >Send</Button>
+                                    </Form.Group>
+                                </Col>
+                             
                         </Row>
                         </section>  
                         
